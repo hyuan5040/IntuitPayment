@@ -3,6 +3,7 @@ package io.swagger.api;
 import io.swagger.model.InventoryItem;
 import io.swagger.model.Payment;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.serdes.CustomSerializer;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -88,14 +89,14 @@ public class PaymentApiController implements PaymentApi {
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, CustomSerializer.class.getName());
 
         // create the producer
-        KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
+        KafkaProducer<String, Payment> producer = new KafkaProducer<>(properties);
 
         // create a producer record
-        ProducerRecord<String, String> producerRecord =
-                new ProducerRecord<>("demo_java", buffer.toString());
+        ProducerRecord<String, Payment> producerRecord =
+                new ProducerRecord<>("demo_java", body);
 
         // send data - asynchronous
         producer.send(producerRecord);
